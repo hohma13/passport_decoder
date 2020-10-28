@@ -4,12 +4,16 @@ import android.app.Activity
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.nfc.NfcAdapter
 import android.nfc.Tag
+import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
+import android.provider.Settings
 import android.util.Log
 import androidx.annotation.NonNull
+import androidx.core.content.ContextCompat.startActivity
 import com.aloteq.passport_decoder.data.Passport
 import com.aloteq.passport_decoder.utils.KeyStoreUtils
 import com.aloteq.passport_decoder.utils.NFCDocumentTag
@@ -159,9 +163,19 @@ class PassportDecoderPlugin()
             "getPlatformVersion" -> result.success("Android ${android.os.Build.VERSION.RELEASE}")
             "getPassportData" -> result.success(startReadPassport(call))
             "readNfcSupported" -> result.success(nfcIsEnabled())
+            "openNFCSettings" -> result.success(openNfcSettings())
             "dispose" -> result.success(dispose())
             else -> result.notImplemented()
         }
+    }
+
+    private fun openNfcSettings() :Boolean{
+        val intent = Intent(Settings.ACTION_NFC_SETTINGS).apply {
+            flags = FLAG_ACTIVITY_NEW_TASK
+        }
+
+        startActivity(applicationContext,intent, Bundle())
+        return true
     }
 
 

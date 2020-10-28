@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
 
@@ -29,9 +30,21 @@ class PassportDecoder {
   }
 
   static Future<bool> get isNfcSupported async {
-    final supported = await _channel.invokeMethod("readNfcSupported");
+    bool supported;
+    if (Platform.isAndroid)
+      supported = await _channel.invokeMethod("readNfcSupported");
+    else if (Platform.isIOS)
+      supported = true;
+    else
+      supported = false;
     assert(supported is bool);
-    return supported as bool;
+    return supported;
+  }
+
+  static Future<bool> openNFCSettings() async {
+    final isOpened = await _channel.invokeMethod('openNFCSettings');
+    assert(isOpened is bool);
+    return isOpened as bool;
   }
 
   /// Example mrz:

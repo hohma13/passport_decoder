@@ -15,11 +15,12 @@ class _HomeScreenState extends State<HomeScreen> {
   String dateOfBirth = '550501';
   String documentNumber = '724005099';
   String dateOfExpiry = '230410';
+  bool isNfcSupported = false;
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> readNfcData(BuildContext context) async {
     readData = '';
-    bool isNfcSupported = await PassportDecoder.isNfcSupported;
+    isNfcSupported = await PassportDecoder.isNfcSupported;
     print("isNfcSupported: $isNfcSupported");
     if (isNfcSupported) {
       listenData();
@@ -115,7 +116,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   return readNfcData(context);
                 },
                 child: Text('Start'),
-              )
+              ),
+              RaisedButton(
+                child: Text('Open NFC Settings'),
+                onPressed: () => PassportDecoder.openNFCSettings(),
+              ),
             ],
           ),
         ),
@@ -131,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
     else if (_enum == StateEnum.Error)
       return '${_enum.name()} $readData';
     else if (_enum == StateEnum.Done)
-      return '${_enum.name()}\n $readData';
+      return '${_enum.name()}';
     else
       return "No name";
   }
