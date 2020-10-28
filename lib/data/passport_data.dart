@@ -1,26 +1,24 @@
 class PassportData {
+  AdditionalPersonDetails additionalPersonDetails;
   FeatureStatus featureStatus;
-  List<Null> fingerprints;
   PersonDetails personDetails;
   SodFile sodFile;
   VerificationStatus verificationStatus;
 
-  PassportData(
-      {this.featureStatus,
-      this.fingerprints,
-      this.personDetails,
-      this.sodFile,
-      this.verificationStatus});
+  PassportData({
+    this.additionalPersonDetails,
+    this.featureStatus,
+    this.personDetails,
+    this.sodFile,
+    this.verificationStatus,
+  });
 
   PassportData.fromJson(Map<dynamic, dynamic> json) {
+    additionalPersonDetails = json['additionalPersonDetails'] != null
+        ? new AdditionalPersonDetails.fromJson(json['additionalPersonDetails'])
+        : null;
     featureStatus =
         json['featureStatus'] != null ? new FeatureStatus.fromJson(json['featureStatus']) : null;
-    if (json['fingerprints'] != null) {
-      fingerprints = new List<Null>();
-      json['fingerprints'].forEach((v) {
-        // fingerprints.add(new Null.fromJson(v));
-      });
-    }
     personDetails =
         json['personDetails'] != null ? new PersonDetails.fromJson(json['personDetails']) : null;
     sodFile = json['sodFile'] != null ? new SodFile.fromJson(json['sodFile']) : null;
@@ -31,11 +29,11 @@ class PassportData {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    if (this.additionalPersonDetails != null) {
+      data['additionalPersonDetails'] = this.additionalPersonDetails.toJson();
+    }
     if (this.featureStatus != null) {
       data['featureStatus'] = this.featureStatus.toJson();
-    }
-    if (this.fingerprints != null) {
-      // data['fingerprints'] = this.fingerprints.map((v) => v.toJson()).toList();
     }
     if (this.personDetails != null) {
       data['personDetails'] = this.personDetails.toJson();
@@ -48,6 +46,88 @@ class PassportData {
     }
     return data;
   }
+}
+
+class AdditionalPersonDetails {
+  AdditionalPersonDetails({
+    this.custodyInformation,
+    this.fullDateOfBirth,
+    this.nameOfHolder,
+    this.otherNames,
+    this.otherValidTdNumbers,
+    this.permanentAddress,
+    this.personalNumber,
+    this.personalSummary,
+    this.placeOfBirth,
+    this.profession,
+    this.tag,
+    this.tagPresenceList,
+    this.telephone,
+    this.title,
+  });
+
+  String custodyInformation;
+  String fullDateOfBirth;
+  String nameOfHolder;
+  List<String> otherNames;
+  List<String> otherValidTdNumbers;
+  List<String> permanentAddress;
+  String personalNumber;
+  String personalSummary;
+  List<String> placeOfBirth;
+  String profession;
+  int tag;
+  List<int> tagPresenceList;
+  String telephone;
+  String title;
+
+  factory AdditionalPersonDetails.fromJson(Map<String, dynamic> json) => AdditionalPersonDetails(
+        custodyInformation: json["custodyInformation"] == null ? null : json["custodyInformation"],
+        fullDateOfBirth: json["fullDateOfBirth"] == null ? null : json["fullDateOfBirth"],
+        nameOfHolder: json["nameOfHolder"] == null ? null : json["nameOfHolder"],
+        otherNames:
+            json["otherNames"] == null ? null : List<String>.from(json["otherNames"].map((x) => x)),
+        otherValidTdNumbers: json["otherValidTDNumbers"] == null
+            ? null
+            : List<String>.from(json["otherValidTDNumbers"].map((x) => x)),
+        permanentAddress: json["permanentAddress"] == null
+            ? null
+            : List<String>.from(json["permanentAddress"].map((x) => x)),
+        personalNumber: json["personalNumber"] == null ? null : json["personalNumber"],
+        personalSummary: json["personalSummary"] == null ? null : json["personalSummary"],
+        placeOfBirth: json["placeOfBirth"] == null
+            ? null
+            : List<String>.from(json["placeOfBirth"].map((x) => x)),
+        profession: json["profession"] == null ? null : json["profession"],
+        tag: json["tag"] == null ? null : json["tag"],
+        tagPresenceList: json["tagPresenceList"] == null
+            ? null
+            : List<int>.from(json["tagPresenceList"].map((x) => x)),
+        telephone: json["telephone"] == null ? null : json["telephone"],
+        title: json["title"] == null ? null : json["title"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "custodyInformation": custodyInformation == null ? null : custodyInformation,
+        "fullDateOfBirth": fullDateOfBirth == null ? null : fullDateOfBirth,
+        "nameOfHolder": nameOfHolder == null ? null : nameOfHolder,
+        "otherNames": otherNames == null ? null : List<dynamic>.from(otherNames.map((x) => x)),
+        "otherValidTDNumbers": otherValidTdNumbers == null
+            ? null
+            : List<dynamic>.from(otherValidTdNumbers.map((x) => x)),
+        "permanentAddress":
+            permanentAddress == null ? null : List<dynamic>.from(permanentAddress.map((x) => x)),
+        "personalNumber": personalNumber == null ? null : personalNumber,
+        "personalSummary": personalSummary == null ? null : personalSummary,
+        "placeOfBirth":
+            placeOfBirth == null ? null : List<dynamic>.from(placeOfBirth.map((x) => x)),
+        "profession": profession == null ? null : profession,
+        "tag": tag == null ? null : tag,
+        "tagPresenceList":
+            tagPresenceList == null ? null : List<dynamic>.from(tagPresenceList.map((x) => x)),
+        "telephone": telephone == null ? null : telephone,
+        "title": title == null ? null : title,
+      };
 }
 
 class FeatureStatus {

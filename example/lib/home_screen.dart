@@ -34,10 +34,18 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       PassportDecoder.getPassportData(getMrzData())
           .listen((event) => handleEvents(event))
-          .onError((error) => print('PassportError: $error'));
+          .onError((error) => handleError(error));
     } catch (e) {
       print(e);
     }
+  }
+
+  void handleError(error) {
+    PassportDecoder.dispose();
+    _enum = StateEnum.Error;
+    readData = error.message.toString();
+    setState(() {});
+    print('PassportError: $error');
   }
 
   Map<String, String> getMrzData() {
@@ -56,10 +64,12 @@ class _HomeScreenState extends State<HomeScreen> {
       _enum = StateEnum.Done;
       PassportDecoder.dispose();
     } else if (event.containsKey('personDetails')) {
-      var a = PassportData.fromJson(event);
+      var passportData = PassportData.fromJson(event);
       _enum = StateEnum.Data;
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => PassportDetailsScreen(passportData: a)));
+          context,
+          MaterialPageRoute(
+              builder: (context) => PassportDetailsScreen(passportData: passportData)));
       readData = event.toString();
     }
     setState(() {});
@@ -71,40 +81,43 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Plugin example app'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (_enum == StateEnum.Loading) CircularProgressIndicator(),
-            Text(
-              getText(),
-              textAlign: TextAlign.center,
-            ),
-            TextFormField(
-              decoration: InputDecoration(hintText: documentNumber, helperText: 'Document number'),
-              onChanged: (text) => documentNumber = text,
-            ),
-            TextFormField(
-              decoration: InputDecoration(
-                  hintText: dateOfBirth, helperText: 'Date of Birth. Format: yyMMdd'),
-              onChanged: (text) => dateOfBirth = text,
-            ),
-            TextFormField(
-              decoration: InputDecoration(
-                  hintText: dateOfExpiry, helperText: 'Date of Expiry. Format: yyMMdd'),
-              onChanged: (text) => dateOfExpiry = text,
-            ),
-            RaisedButton(
-              onPressed: () {
-                readData = '';
-                _enum = StateEnum.Start;
-                setState(() {});
-                return readNfcData(context);
-              },
-              child: Text('Start'),
-            )
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (_enum == StateEnum.Loading) LinearProgressIndicator(),
+              Text(
+                getText(),
+                textAlign: TextAlign.center,
+              ),
+              TextFormField(
+                decoration:
+                    InputDecoration(hintText: documentNumber, helperText: 'Document number'),
+                onChanged: (text) => documentNumber = text,
+              ),
+              TextFormField(
+                decoration: InputDecoration(
+                    hintText: dateOfBirth, helperText: 'Date of Birth. Format: yyMMdd'),
+                onChanged: (text) => dateOfBirth = text,
+              ),
+              TextFormField(
+                decoration: InputDecoration(
+                    hintText: dateOfExpiry, helperText: 'Date of Expiry. Format: yyMMdd'),
+                onChanged: (text) => dateOfExpiry = text,
+              ),
+              RaisedButton(
+                onPressed: () {
+                  readData = '';
+                  _enum = StateEnum.Start;
+                  setState(() {});
+                  return readNfcData(context);
+                },
+                child: Text('Start'),
+              )
+            ],
+          ),
         ),
       ),
     );
