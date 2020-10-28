@@ -16,35 +16,21 @@ class PassportDetailsScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextFormField(
-                initialValue: passportData.personDetails.primaryIdentifier,
-                decoration: InputDecoration(helperText: 'Given Name'),
+              Text(
+                'Information',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
               ),
-              TextFormField(
-                initialValue: passportData.personDetails.secondaryIdentifier,
-                decoration: InputDecoration(helperText: 'Surname'),
+              SizedBox(
+                height: 8.0,
               ),
-              TextFormField(
-                initialValue: passportData.personDetails.gender,
-                decoration: InputDecoration(helperText: 'Gender'),
-              ),
-              TextFormField(
-                initialValue: passportData.personDetails.dateOfBirth,
-                decoration: InputDecoration(helperText: 'Date of Birth'),
-              ),
-              TextFormField(
-                initialValue: passportData.personDetails.dateOfExpiry,
-                decoration: InputDecoration(helperText: 'Date of Expiry'),
-              ),
-              TextFormField(
-                initialValue: passportData.personDetails.documentNumber,
-                decoration: InputDecoration(helperText: 'Document number'),
-              ),
-              TextFormField(
-                initialValue: passportData.personDetails.documentCode,
-                decoration: InputDecoration(helperText: 'Document code'),
-              ),
+              if (passportData.personDetails != null)
+                Text('${passportData.personDetails.toString()}'),
+              if (passportData.additionalPersonDetails != null)
+                Text('${passportData.additionalPersonDetails.toString()}'),
             ],
           ),
         ),

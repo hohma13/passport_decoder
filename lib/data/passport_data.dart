@@ -128,6 +128,25 @@ class AdditionalPersonDetails {
         "telephone": telephone == null ? null : telephone,
         "title": title == null ? null : title,
       };
+
+  @override
+  String toString() {
+    return 'AdditionalPersonDetails: \n'
+        'custodyInformation: $custodyInformation \n'
+        'fullDateOfBirth: $fullDateOfBirth \n'
+        'nameOfHolder: $nameOfHolder \n'
+        'otherNames: ${otherNames.toString()} \n'
+        'otherValidTdNumbers: ${otherValidTdNumbers.toString()} \n'
+        'permanentAddress: ${permanentAddress.toString()} \n'
+        'personalNumber: $personalNumber \n'
+        'personalSummary: $personalSummary \n'
+        'placeOfBirth: ${placeOfBirth.toString()} \n'
+        'profession: $profession \n'
+        'tag: ${tag.toString()} \n'
+        'tagPresenceList: ${tagPresenceList.toString()} \n'
+        'telephone: $telephone \n'
+        'title: $title \n';
+  }
 }
 
 class FeatureStatus {
@@ -208,6 +227,21 @@ class PersonDetails {
     data['primaryIdentifier'] = this.primaryIdentifier;
     data['secondaryIdentifier'] = this.secondaryIdentifier;
     return data;
+  }
+
+  @override
+  String toString() {
+    return 'PersonDetails: \n'
+        'dateOfBirth: $dateOfBirth \n'
+        'dateOfExpiry: $dateOfExpiry \n'
+        'documentCode: $documentCode \n'
+        'documentNumber: $documentNumber \n'
+        'gender: $gender \n'
+        'issuingState: $issuingState \n'
+        'nationality: $nationality \n'
+        'optionalData1: $optionalData1 \n'
+        'primaryIdentifier: $primaryIdentifier \n'
+        'secondaryIdentifier: ${secondaryIdentifier.replaceAll("<", '')} \n';
   }
 }
 
