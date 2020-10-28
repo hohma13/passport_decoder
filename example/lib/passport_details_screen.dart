@@ -18,31 +18,31 @@ class PassportDetailsScreen extends StatelessWidget {
           child: Column(
             children: [
               TextFormField(
-                initialValue: passportData.personalDetails.givenNames,
+                initialValue: passportData.personDetails.primaryIdentifier,
                 decoration: InputDecoration(helperText: 'Given Name'),
               ),
               TextFormField(
-                initialValue: passportData.personalDetails.surname,
+                initialValue: passportData.personDetails.secondaryIdentifier,
                 decoration: InputDecoration(helperText: 'Surname'),
               ),
               TextFormField(
-                initialValue: passportData.personalDetails.gender,
+                initialValue: passportData.personDetails.gender,
                 decoration: InputDecoration(helperText: 'Gender'),
               ),
               TextFormField(
-                initialValue: passportData.personalDetails.dateOfBirth,
+                initialValue: passportData.personDetails.dateOfBirth,
                 decoration: InputDecoration(helperText: 'Date of Birth'),
               ),
               TextFormField(
-                initialValue: passportData.personalDetails.dateOfExpiry,
+                initialValue: passportData.personDetails.dateOfExpiry,
                 decoration: InputDecoration(helperText: 'Date of Expiry'),
               ),
               TextFormField(
-                initialValue: passportData.personalDetails.documentNumber,
+                initialValue: passportData.personDetails.documentNumber,
                 decoration: InputDecoration(helperText: 'Document number'),
               ),
               TextFormField(
-                initialValue: passportData.personalDetails.documentCode,
+                initialValue: passportData.personDetails.documentCode,
                 decoration: InputDecoration(helperText: 'Document code'),
               ),
             ],

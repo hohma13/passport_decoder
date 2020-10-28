@@ -1,11 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/services.dart';
 
 class PassportDecoder {
   static const MethodChannel _channel = const MethodChannel('passport_decoder');
   static const EventChannel _eventChannel = const EventChannel('passport_decoder_events');
-  static Stream<Map<String, dynamic>> _passportStream;
+  static Stream<dynamic> _passportStream;
 
   static Future<String> get platformVersion async {
     final String version = await _channel.invokeMethod('getPlatformVersion');
@@ -15,9 +16,13 @@ class PassportDecoder {
   static void _createPassportStream() {
     _passportStream = _eventChannel.receiveBroadcastStream().map((event) {
       print('');
-      // Map<String, dynamic> eventValue = (event as Map).map((key, value) => MapEntry(key, value));
-      if (event is Map)
-        return event.map((key, value) => MapEntry(key, value));
+      var json;
+      if (event is String) {
+        json = jsonDecode(event);
+        print(json.toString());
+      }
+      if (json is Map)
+        return json.map((key, value) => MapEntry(key, value));
       else
         return Map<String, String>();
     });
@@ -36,11 +41,13 @@ class PassportDecoder {
   ///   "dateOfExpiry":"yyMMdd",
   /// }
 
-  static Stream<Map<String, dynamic>> getPassportData(Map<String, String> mrz) {
+  static Stream<Map<dynamic, dynamic>> getPassportData(Map<String, String> mrz) {
     if (_passportStream == null) {
       _createPassportStream();
+    } else {
+      throw Exception('Already start');
     }
-    StreamController<Map<String, dynamic>> controller = StreamController();
+    StreamController<Map<dynamic, dynamic>> controller = StreamController();
     final stream = _passportStream;
     final subscription = stream.listen(
       (message) {
@@ -68,6 +75,7 @@ class PassportDecoder {
   }
 
   static Future<bool> dispose() async {
+    _passportStream = null;
     bool isOk = await _channel.invokeMethod('dispose');
     return isOk;
   }

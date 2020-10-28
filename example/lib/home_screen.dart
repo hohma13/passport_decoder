@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:passport_decoder/data/passport_data.dart';
 import 'package:passport_decoder/passport_decoder.dart';
 import 'package:passport_decoder_example/main.dart';
@@ -18,38 +17,52 @@ class _HomeScreenState extends State<HomeScreen> {
   String dateOfExpiry = '230410';
 
   // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState(BuildContext context) async {
+  Future<void> readNfcData(BuildContext context) async {
+    readData = '';
     bool isNfcSupported = await PassportDecoder.isNfcSupported;
     print("isNfcSupported: $isNfcSupported");
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      PassportDecoder.getPassportData({
-        "documentNumber": "$documentNumber",
-        "dateOfBirth": "$dateOfBirth",
-        "dateOfExpiry": "$dateOfExpiry",
-      }).listen((event) {
-        print('PassportEvent: $event');
-        if (event.containsValue('start')) {
-          _enum = StateEnum.Loading;
-          readData = 'Reading NFC';
-        } else if (event.containsValue('end')) {
-          _enum = StateEnum.Done;
-          readData = readData + '\n' + 'Done';
-        } else if (event.containsKey('personalDetails')) {
-          var a = PassportData(
-              personalDetails: PersonalDetails.fromMap(Map.from(event['personalDetails'])));
-          _enum = StateEnum.Done;
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => PassportDetailsScreen(passportData: a)));
-          readData = event.toString();
-        }
-        setState(() {});
-      }).onError((error) {
-        print('PassportError: $error');
-      });
-    } on PlatformException {
-      readData = '';
+    if (isNfcSupported) {
+      listenData();
+    } else {
+      _enum = StateEnum.Error;
+      readData = 'NFC is not supported or disabled';
+      setState(() {});
     }
+  }
+
+  void listenData() {
+    try {
+      PassportDecoder.getPassportData(getMrzData())
+          .listen((event) => handleEvents(event))
+          .onError((error) => print('PassportError: $error'));
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Map<String, String> getMrzData() {
+    return {
+      "documentNumber": "$documentNumber",
+      "dateOfBirth": "$dateOfBirth",
+      "dateOfExpiry": "$dateOfExpiry",
+    };
+  }
+
+  void handleEvents(Map event) {
+    print('PassportEvent: $event');
+    if (event.containsValue('start')) {
+      _enum = StateEnum.Loading;
+    } else if (event.containsValue('end')) {
+      _enum = StateEnum.Done;
+      PassportDecoder.dispose();
+    } else if (event.containsKey('personDetails')) {
+      var a = PassportData.fromJson(event);
+      _enum = StateEnum.Data;
+      Navigator.push(
+          context, MaterialPageRoute(builder: (context) => PassportDetailsScreen(passportData: a)));
+      readData = event.toString();
+    }
+    setState(() {});
   }
 
   @override
@@ -65,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             if (_enum == StateEnum.Loading) CircularProgressIndicator(),
             Text(
-              'Running on: $readData\n',
+              getText(),
               textAlign: TextAlign.center,
             ),
             TextFormField(
@@ -85,9 +98,9 @@ class _HomeScreenState extends State<HomeScreen> {
             RaisedButton(
               onPressed: () {
                 readData = '';
-                _enum = StateEnum.Loading;
+                _enum = StateEnum.Start;
                 setState(() {});
-                return initPlatformState(context);
+                return readNfcData(context);
               },
               child: Text('Start'),
             )
@@ -95,5 +108,18 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  String getText() {
+    if (_enum == StateEnum.Loading || _enum == StateEnum.Start)
+      return _enum.name();
+    else if (_enum == StateEnum.Data)
+      return '${_enum.name()} $readData';
+    else if (_enum == StateEnum.Error)
+      return '${_enum.name()} $readData';
+    else if (_enum == StateEnum.Done)
+      return '${_enum.name()}\n $readData';
+    else
+      return "No name";
   }
 }

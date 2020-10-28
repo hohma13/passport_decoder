@@ -14,6 +14,7 @@ import com.aloteq.passport_decoder.data.Passport
 import com.aloteq.passport_decoder.utils.KeyStoreUtils
 import com.aloteq.passport_decoder.utils.NFCDocumentTag
 import com.aloteq.passport_decoder.utils.NFCDocumentTag.PassportCallback
+import com.google.gson.Gson
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -29,7 +30,6 @@ import org.jmrtd.AccessDeniedException
 import org.jmrtd.BACDeniedException
 import org.jmrtd.MRTDTrustStore
 import org.jmrtd.PACEException
-import kotlin.collections.HashMap
 
 /** PassportDecoderPlugin */
 class PassportDecoderPlugin()
@@ -83,95 +83,48 @@ class PassportDecoderPlugin()
 
                         override fun onPassportReadStart() {
                             Log.i("Plugin", "onPassportReadStart: start")
-                            eventSuccess(result = mapOf(pair = Pair("PassportReadStart", "start")))
+                            eventSuccess(result = "{\"PassportReadStart\": \"start\"}")
                         }
 
                         override fun onPassportReadFinish() {
-                            eventSuccess(result = mapOf(pair = Pair("PassportReadFinish", "finish")))
+                            eventSuccess(result = "{\"PassportReadEnd\": \"end\"}")
+
                             Log.i("Plugin", "onPassportReadFinish: finish")
                         }
 
                         override fun onPassportRead(passport: Passport?) {
-                            val personalDetail = passport?.personDetails
-                            val additionalPersonDetails = passport?.additionalPersonDetails
-                            var personalDetailMap: Map<String,Any> = emptyMap()
-                            var additionalPersonDetailsMap: Map<String,Any> = emptyMap()
-                            if (personalDetail != null)
-                                personalDetailMap =  mapOf(pair = Pair("personalDetails", mapOf(pairs = *arrayOf(
-                                        Pair("givenNames", "${personalDetail.primaryIdentifier}"),
-                                        Pair("surname", "${personalDetail.secondaryIdentifier?.replace("<","")}"),
-                                        Pair("gender", "${personalDetail.gender}"),
-                                        Pair("nationality", "${personalDetail.nationality}"),
-                                        Pair("dateOfBirth", "${personalDetail.dateOfBirth}"),
-                                        Pair("documentNumber", "${personalDetail.documentNumber}"),
-                                        Pair("documentCode", "${personalDetail.documentCode}"),
-                                        Pair("dateOfExpiry", "${personalDetail.dateOfExpiry}")
-                                ))))
-                            if(additionalPersonDetails != null)
-                                additionalPersonDetailsMap =  mapOf(pair = Pair("additionalPersonDetails", mapOf(pairs = *arrayOf(
-                                        Pair("nameOfHolder", "${additionalPersonDetails.nameOfHolder}"),
-                                        Pair("personalNumber", "${additionalPersonDetails.personalNumber}"),
-                                        Pair("personalSummary", "${additionalPersonDetails.personalSummary}"),
-                                        Pair("fullDateOfBirth", "${additionalPersonDetails.fullDateOfBirth}")
-                                ))))
-
-                                eventSuccess(result = personalDetailMap )
-                            Log.i("Plugin", "onPassportRead: $passport")
+                            val json = Gson().toJson(passport)
+                            eventSuccess(result = json)
                         }
 
                         override fun onAccessDeniedException(exception: AccessDeniedException) {
-                            Log.i("Plugin", "onAccessDeniedException: $exception")
-                            eventSuccess(result = mapOf(pair = Pair("AccessDeniedException", "start")))
-
-//                            eventError(
-//                                    details = "ex",
-//                                    code = "500",
-//                                    message = exception.message ?: "error"
-//                            )
-
+                            Log.e("Plugin", "onAccessDeniedException: $exception")
+                            eventError(details = "ex", code = "500", message = exception.message
+                                    ?: "error")
                         }
 
                         override fun onBACDeniedException(exception: BACDeniedException) {
-                            Log.i("Plugin", "onBACDeniedException: $exception")
-                            eventSuccess(result = mapOf(pair = Pair("BACDeniedException", "${exception.message}")))
-//
-//                            eventError(
-//                                    details = "ex",
-//                                    code = "500",
-//                                    message = exception.message ?: "error"
-//                            )
+                            Log.e("Plugin", "onBACDeniedException: $exception")
+                            eventError(details = "ex", code = "500", message = exception.message
+                                    ?: "error")
                         }
 
                         override fun onPACEException(exception: PACEException) {
-                            Log.i("Plugin", "onPACEException: $exception")
-                            eventSuccess(result = mapOf(pair = Pair("PACEException", "${exception.message}")))
-//
-//                            eventError(
-//                                    details = "ex",
-//                                    code = "500",
-//                                    message = exception.message ?: "error"
-//                            )
+                            Log.e("Plugin", "onPACEException: $exception")
+                            eventError(details = "ex", code = "500", message = exception.message
+                                    ?: "error")
                         }
 
                         override fun onCardException(exception: CardServiceException) {
-                            eventSuccess(result = mapOf(pair = Pair("CardServiceException", "${exception.message}")))
-//
-//                            eventError(
-//                                    details = "ex",
-//                                    code = "500",
-//                                    message = exception.message ?: "error"
-//                            )
+                            Log.e("Plugin", "onCardException: $exception ")
+                            eventError(details = "ex", code = "500", message = exception.message
+                                    ?: "error")
                         }
 
                         override fun onGeneralException(exception: Exception?) {
-                            Log.i("Plugin", "onGeneralException: $exception ")
-                            eventSuccess(result = mapOf(pair = Pair("GeneralException", "${exception?.message}")))
-//
-//                            eventError(
-//                                    details = "ex",
-//                                    code = "500",
-//                                    message = exception?.message ?: "error"
-//                            )
+                            Log.e("Plugin", "onGeneralException: $exception ")
+                            eventError(details = "ex", code = "500", message = exception?.message
+                                    ?: "error")
                         }
                     }
             )
@@ -198,6 +151,7 @@ class PassportDecoderPlugin()
     override fun onDetachedFromActivity() {
         disposable.dispose()
         nfcAdapter = null
+
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
@@ -205,7 +159,7 @@ class PassportDecoderPlugin()
             "getPlatformVersion" -> result.success("Android ${android.os.Build.VERSION.RELEASE}")
             "getPassportData" -> result.success(startReadPassport(call))
             "readNfcSupported" -> result.success(nfcIsEnabled())
-            "dispose" -> result.success(true)
+            "dispose" -> result.success(dispose())
             else -> result.notImplemented()
         }
     }
@@ -217,6 +171,8 @@ class PassportDecoderPlugin()
             mrz = arg.map { it.value.toString() }
         }
         nfcAdapter = NfcAdapter.getDefaultAdapter(applicationContext)
+        if (nfcAdapter == null) return false
+
         val intent = Intent(activity.applicationContext, activity.javaClass)
         intent.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
         val pendingIntent = PendingIntent.getActivity(activity.applicationContext, 0, intent, 0)
@@ -241,16 +197,18 @@ class PassportDecoderPlugin()
         events = null
     }
 
-    private fun eventSuccess(result: Map<String, Any>) {
-        val resultNew: HashMap<String, Any> = hashMapOf()
-        resultNew.putAll(result)
+    private fun dispose(): Boolean{
+        nfcAdapter?.disableForegroundDispatch(activity)
+        events = null
+        return true
+    }
 
-
+    private fun eventSuccess(result: String) {
         val mainThread = Handler(activity.mainLooper)
         val runnable = Runnable {
             if (events != null) {
                 // Event stream must be handled on main/ui thread
-                events!!.success(resultNew)
+                events!!.success(result)
             }
         }
         mainThread.post(runnable)
