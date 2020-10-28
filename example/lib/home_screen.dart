@@ -12,9 +12,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String readData = '';
   StateEnum _enum;
-  String dateOfBirth = '550501';
-  String documentNumber = '724005099';
-  String dateOfExpiry = '230410';
+  String dateOfBirth = '';
+  String documentNumber = '';
+  String dateOfExpiry = '';
   bool isNfcSupported = false;
 
   // Platform messages are asynchronous, so we initialize in an async method.
