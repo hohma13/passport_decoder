@@ -16,12 +16,7 @@ class PassportDecoder {
 
   static void _createPassportStream() {
     _passportStream = _eventChannel.receiveBroadcastStream().map((event) {
-      print('');
-      var json;
-      if (event is String) {
-        json = jsonDecode(event);
-        print(json.toString());
-      }
+      var json = jsonDecode(event);
       if (json is Map)
         return json.map((key, value) => MapEntry(key, value));
       else

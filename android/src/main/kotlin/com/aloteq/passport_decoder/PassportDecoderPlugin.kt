@@ -87,11 +87,11 @@ class PassportDecoderPlugin()
 
                         override fun onPassportReadStart() {
                             Log.i("Plugin", "onPassportReadStart: start")
-                            eventSuccess(result = "{\"PassportReadStart\": \"start\"}")
+                            eventSuccess(result = "{\"ReadStatus\": \"start\"}")
                         }
 
                         override fun onPassportReadFinish() {
-                            eventSuccess(result = "{\"PassportReadEnd\": \"end\"}")
+                            eventSuccess(result = "{\"ReadStatus\": \"end\"}")
 
                             Log.i("Plugin", "onPassportReadFinish: finish")
                         }
