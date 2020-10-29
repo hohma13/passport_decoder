@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:passport_decoder/data/passport_data.dart';
 
@@ -27,10 +29,16 @@ class PassportDetailsScreen extends StatelessWidget {
               SizedBox(
                 height: 8.0,
               ),
+              Image.memory(
+                base64Decode(passportData.faceArray),
+                width: 50,
+                height: 100,
+              ),
               if (passportData.personDetails != null)
                 Text('${passportData.personDetails.toString()}'),
               if (passportData.additionalPersonDetails != null)
                 Text('${passportData.additionalPersonDetails.toString()}'),
+              if (passportData.mrz != null) Text('${passportData.mrz}'),
             ],
           ),
         ),

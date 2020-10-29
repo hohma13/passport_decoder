@@ -211,6 +211,7 @@ private constructor() {
         private set
     var cvcaFile: CVCAFile? = null
         private set
+    var mrz: String? = null
 
 
     init {
@@ -342,10 +343,16 @@ private constructor() {
             comFile = getComFile(ps)
             sodFile = getSodFile(ps)
             dg1File = getDG1File(ps)
+            mrz = dg1File.toString().replace("DG1File","")
             dgNumbersAlreadyRead.add(1)
         } catch (ioe: IOException) {
             ioe.printStackTrace()
             Log.w(TAG, "Could not read file")
+        }
+        try {
+            dg2File = getDG2File(ps)
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
 
         try {

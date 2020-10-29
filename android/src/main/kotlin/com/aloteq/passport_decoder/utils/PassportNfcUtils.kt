@@ -2,6 +2,7 @@ package com.aloteq.passport_decoder.utils
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
 
 import org.jmrtd.cert.CVCPrincipal
@@ -52,74 +53,30 @@ object PassportNfcUtils {
     }
 
 
-//    @Throws(IOException::class)
-//    fun retrieveFaceImage(context: Context, dg2File: DG2File): Bitmap {
-//        val allFaceImageInfos = ArrayList<FaceImageInfo>()
-//        val faceInfos = dg2File.faceInfos
-//        for (faceInfo in faceInfos) {
-//            allFaceImageInfos.addAll(faceInfo.faceImageInfos)
-//        }
-//
-//        if (!allFaceImageInfos.isEmpty()) {
-//            val faceImageInfo = allFaceImageInfos.iterator().next()
-//            return toBitmap(faceImageInfo.imageLength, faceImageInfo.imageInputStream, faceImageInfo.mimeType)
-//        }
-//        throw IOException("Unable to decodeImage Image")
-//    }
-//
-//    @Throws(IOException::class)
-//    fun retrievePortraitImage(context: Context, dg5File: DG5File): Bitmap {
-//        val faceInfos = dg5File.images
-//        if (!faceInfos.isEmpty()) {
-//            val faceImageInfo = faceInfos.iterator().next()
-//            return toBitmap(faceImageInfo.imageLength, faceImageInfo.imageInputStream, faceImageInfo.mimeType)
-//        }
-//        throw IOException("Unable to decodeImage Image")
-//    }
-//
-//    @Throws(IOException::class)
-//    fun retrieveSignatureImage(context: Context, dg7File: DG7File): Bitmap {
-//        val displayedImageInfos = dg7File.images
-//        if (!displayedImageInfos.isEmpty()) {
-//            val displayedImageInfo = displayedImageInfos.iterator().next()
-//            return toBitmap(displayedImageInfo.imageLength, displayedImageInfo.imageInputStream, displayedImageInfo.mimeType)
-//        }
-//        throw IOException("Unable to decodeImage Image")
-//    }
-//
-//    @Throws(IOException::class)
-//    fun retrieveFingerPrintImage(context: Context, dg3File: DG3File): List<Bitmap> {
-//        val allFingerImageInfos = ArrayList<FingerImageInfo>()
-//        val fingerInfos = dg3File.fingerInfos
-//
-//        val fingerprintsImage = ArrayList<Bitmap>()
-//        for (fingerInfo in fingerInfos) {
-//            allFingerImageInfos.addAll(fingerInfo.fingerImageInfos)
-//        }
-//
-//        val iterator = allFingerImageInfos.iterator()
-//        while (iterator.hasNext()) {
-//            val fingerImageInfo = iterator.next()
-//            val bitmap = toBitmap(fingerImageInfo.imageLength, fingerImageInfo.imageInputStream, fingerImageInfo.mimeType)
-//            fingerprintsImage.add(bitmap)
-//        }
-//
-//        if (fingerprintsImage.isEmpty()) {
-//            throw IOException("Unable to decodeImage Finger print Image")
-//        }
-//        return fingerprintsImage
-//
-//    }
+    @Throws(IOException::class)
+    fun retrieveFaceImage(dg2File: DG2File): Bitmap {
+        val allFaceImageInfos = ArrayList<FaceImageInfo>()
+        val faceInfos = dg2File.faceInfos
+        for (faceInfo in faceInfos) {
+            allFaceImageInfos.addAll(faceInfo.faceImageInfos)
+        }
+
+        if (!allFaceImageInfos.isEmpty()) {
+            val faceImageInfo = allFaceImageInfos.iterator().next()
+            return toBitmap(faceImageInfo.imageLength, faceImageInfo.imageInputStream, faceImageInfo.mimeType)
+        }
+        throw IOException("Unable to decodeImage Image")
+    }
 
 
-//    @Throws(IOException::class)
-//    private fun toBitmap(imageLength: Int, inputStream: InputStream, mimeType: String): Bitmap {
-//        val dataInputStream = DataInputStream(inputStream)
-//        val buffer = ByteArray(imageLength)
-//        dataInputStream.readFully(buffer, 0, imageLength)
-//        val byteArrayInputStream = ByteArrayInputStream(buffer, 0, imageLength)
-//        return ImageUtil.decodeImage(byteArrayInputStream, imageLength, mimeType)
-//    }
+    @Throws(IOException::class)
+    private fun toBitmap(imageLength: Int, inputStream: InputStream, mimeType: String):Bitmap {
+        val dataInputStream = DataInputStream(inputStream)
+        val buffer = ByteArray(imageLength)
+        dataInputStream.readFully(buffer, 0, imageLength)
+        val byteArrayInputStream = ByteArrayInputStream(buffer, 0, imageLength)
+        return ImageUtil.decodeImage(byteArrayInputStream, imageLength, mimeType)
+    }
 
 
     @Throws(GeneralSecurityException::class)
@@ -256,17 +213,4 @@ object PassportNfcUtils {
 
         return chain
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

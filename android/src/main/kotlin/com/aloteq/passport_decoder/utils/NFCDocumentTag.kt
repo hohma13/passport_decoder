@@ -1,8 +1,10 @@
 package com.aloteq.passport_decoder.utils
 
+import android.R.attr.bitmap
+import android.graphics.Bitmap
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
-import android.util.Log
+import android.util.Base64
 import com.aloteq.passport_decoder.data.AdditionalPersonDetails
 import com.aloteq.passport_decoder.data.Passport
 import com.aloteq.passport_decoder.data.PersonDetails
@@ -14,8 +16,10 @@ import net.sf.scuba.smartcards.CardService
 import net.sf.scuba.smartcards.CardServiceException
 import org.jmrtd.*
 import org.jmrtd.lds.icao.DG1File
-import java.io.IOException
+import java.io.ByteArrayOutputStream
+import java.nio.ByteBuffer
 import java.security.Security
+
 
 class NFCDocumentTag {
 
@@ -48,7 +52,7 @@ class NFCDocumentTag {
 
 
                 passport.sodFile = passportNFC.sodFile
-
+                passport.mrz = passportNFC.mrz
 
                 //Basic Information
                 if (passportNFC.dg1File != null) {
@@ -90,6 +94,25 @@ class NFCDocumentTag {
                     additionalPersonDetails.title = dg11.title
 
                     passport.additionalPersonDetails = additionalPersonDetails
+                }
+                //Picture
+                if (passportNFC.dg2File != null) {
+                    //Get the picture
+                    try {
+                        val faceImage = PassportNfcUtils.retrieveFaceImage(passportNFC.dg2File!!)
+
+                        val stream = ByteArrayOutputStream()
+                        faceImage.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                        val byteArray: ByteArray = stream.toByteArray()
+                        faceImage.recycle()
+                        val encoded: String = Base64.encodeToString(byteArray, Base64.DEFAULT)
+                        passport.face = faceImage
+                        passport.faceArray = encoded
+                    } catch (e: Exception) {    
+                        //Don't do anything
+                        e.printStackTrace()
+                    }
+
                 }
 
                 //TODO EAC

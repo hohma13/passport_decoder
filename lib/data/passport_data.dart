@@ -1,9 +1,11 @@
 class PassportData {
   AdditionalPersonDetails additionalPersonDetails;
+  String faceArray;
   FeatureStatus featureStatus;
   PersonDetails personDetails;
   SodFile sodFile;
   VerificationStatus verificationStatus;
+  String mrz;
 
   PassportData({
     this.additionalPersonDetails,
@@ -11,12 +13,15 @@ class PassportData {
     this.personDetails,
     this.sodFile,
     this.verificationStatus,
+    this.mrz,
   });
 
   PassportData.fromJson(Map<dynamic, dynamic> json) {
     additionalPersonDetails = json['additionalPersonDetails'] != null
         ? new AdditionalPersonDetails.fromJson(json['additionalPersonDetails'])
         : null;
+    faceArray =
+        json["faceArray"] == null ? null : (json["faceArray"] as String).replaceAll("\n", '');
     featureStatus =
         json['featureStatus'] != null ? new FeatureStatus.fromJson(json['featureStatus']) : null;
     personDetails =
@@ -25,6 +30,7 @@ class PassportData {
     verificationStatus = json['verificationStatus'] != null
         ? new VerificationStatus.fromJson(json['verificationStatus'])
         : null;
+    mrz = json['mrz'] != null ? json['mrz'] : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -32,6 +38,8 @@ class PassportData {
     if (this.additionalPersonDetails != null) {
       data['additionalPersonDetails'] = this.additionalPersonDetails.toJson();
     }
+    data["faceArray"] = faceArray == null ? null : faceArray;
+
     if (this.featureStatus != null) {
       data['featureStatus'] = this.featureStatus.toJson();
     }
@@ -43,6 +51,9 @@ class PassportData {
     }
     if (this.verificationStatus != null) {
       data['verificationStatus'] = this.verificationStatus.toJson();
+    }
+    if (this.mrz != null) {
+      data['mrz'] = mrz;
     }
     return data;
   }

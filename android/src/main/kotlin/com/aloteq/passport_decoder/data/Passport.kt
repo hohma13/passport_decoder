@@ -15,6 +15,7 @@ class Passport : Parcelable {
 
     var sodFile: SODFile? = null
     var face: Bitmap? = null
+    var faceArray: String? = null
     var portrait: Bitmap? = null
     var signature: Bitmap? = null
     var fingerprints: List<Bitmap>? = null
@@ -23,12 +24,14 @@ class Passport : Parcelable {
     var additionalDocumentDetails: AdditionalDocumentDetails? = null
     var featureStatus: FeatureStatus? = null
     var verificationStatus: VerificationStatus? = null
+    var mrz: String? =null
 
     constructor(`in`: Parcel) {
 
 
         fingerprints = ArrayList()
         this.face = if (`in`.readInt() == 1) `in`.readParcelable(Bitmap::class.java.classLoader) else null
+        this.faceArray = if (`in`.readInt() == 1) `in`.readString() else null
         this.portrait = if (`in`.readInt() == 1) `in`.readParcelable(Bitmap::class.java.classLoader) else null
         this.personDetails = if (`in`.readInt() == 1) `in`.readParcelable(PersonDetails::class.java.classLoader) else null
         this.additionalPersonDetails = if (`in`.readInt() == 1) `in`.readParcelable(AdditionalPersonDetails::class.java.classLoader) else null
@@ -54,6 +57,7 @@ class Passport : Parcelable {
         if (`in`.readInt() == 1) {
             verificationStatus = `in`.readParcelable(VerificationStatus::class.java.classLoader)
         }
+        this.mrz = if (`in`.readInt() == 1) `in`.readString() else null
 
     }
 
@@ -71,6 +75,10 @@ class Passport : Parcelable {
         dest.writeInt(if (face != null) 1 else 0)
         if (face != null) {
             dest.writeParcelable(face, flags)
+        }
+        dest.writeInt(if (faceArray != null) 1 else 0)
+        if (faceArray != null) {
+            dest.writeString(faceArray)
         }
 
         dest.writeInt(if (portrait != null) 1 else 0)
@@ -116,6 +124,10 @@ class Passport : Parcelable {
         dest.writeInt(if (verificationStatus != null) 1 else 0)
         if (verificationStatus != null) {
             dest.writeParcelable(verificationStatus, flags)
+        }
+        dest.writeInt(if (mrz != null) 1 else 0)
+        if (mrz != null) {
+            dest.writeString(mrz)
         }
 
     }
