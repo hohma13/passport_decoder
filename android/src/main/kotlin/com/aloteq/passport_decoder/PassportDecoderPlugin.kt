@@ -43,6 +43,7 @@ class PassportDecoderPlugin()
     private lateinit var eventChanel: EventChannel
     private lateinit var applicationContext: Context
     private lateinit var activity: Activity
+    private lateinit var binding: ActivityPluginBinding
     private var events: EventSink? = null
 
     private var nfcAdapter: NfcAdapter? = null
@@ -61,6 +62,7 @@ class PassportDecoderPlugin()
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
+        this.binding.removeOnNewIntentListener(this)
     }
 
 
@@ -140,7 +142,7 @@ class PassportDecoderPlugin()
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         activity = binding.activity
-        binding.addOnNewIntentListener(this)
+        this.binding = binding
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
@@ -149,7 +151,6 @@ class PassportDecoderPlugin()
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
         activity = binding.activity
-        binding.addOnNewIntentListener(this)
     }
 
     override fun onDetachedFromActivity() {
@@ -160,7 +161,6 @@ class PassportDecoderPlugin()
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
-            "getPlatformVersion" -> result.success("Android ${android.os.Build.VERSION.RELEASE}")
             "getPassportData" -> result.success(startReadPassport(call))
             "readNfcSupported" -> result.success(nfcIsEnabled())
             "openNFCSettings" -> result.success(openNfcSettings())
@@ -173,13 +173,13 @@ class PassportDecoderPlugin()
         val intent = Intent(Settings.ACTION_NFC_SETTINGS).apply {
             flags = FLAG_ACTIVITY_NEW_TASK
         }
-
         startActivity(applicationContext,intent, Bundle())
         return true
     }
 
 
     private fun startReadPassport(call: MethodCall): Boolean {
+        binding.addOnNewIntentListener(this)
         val arg = call.arguments
         if (arg is Map<*, *>) {
             mrz = arg.map { it.value.toString() }
@@ -208,11 +208,13 @@ class PassportDecoderPlugin()
 
     override fun onCancel(arguments: Any?) {
         nfcAdapter?.disableForegroundDispatch(activity)
+        binding.removeOnNewIntentListener(this)
         events = null
     }
 
     private fun dispose(): Boolean{
         nfcAdapter?.disableForegroundDispatch(activity)
+        binding.removeOnNewIntentListener(this)
         events = null
         return true
     }
@@ -221,7 +223,8 @@ class PassportDecoderPlugin()
         val mainThread = Handler(activity.mainLooper)
         val runnable = Runnable {
             if (events != null) {
-                // Event stream must be handled on main/ui thread
+                if(result.contains("end"))
+                    binding.removeOnNewIntentListener(this)
                 events!!.success(result)
             }
         }
@@ -232,7 +235,7 @@ class PassportDecoderPlugin()
         val mainThread = Handler(activity.mainLooper)
         val runnable = Runnable {
             if (events != null) {
-                // Event stream must be handled on main/ui thread
+                binding.removeOnNewIntentListener(this)
                 events!!.error(code, message, details)
             }
         }
