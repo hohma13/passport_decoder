@@ -31,20 +31,26 @@ class PassportDecoder {
 
   static Future<bool> get isNfcSupported async {
     bool supported;
-    if (Platform.isAndroid)
+    if (Platform.isAndroid) {
       supported = await _channel.invokeMethod("readNfcSupported");
-    else if (Platform.isIOS)
+    } else if (Platform.isIOS) {
       supported = true;
-    else
+    } else {
       supported = false;
+    }
     assert(supported is bool);
     return supported;
   }
 
+  ///Android only
   static Future<bool> openNFCSettings() async {
-    final isOpened = await _channel.invokeMethod('openNFCSettings');
-    assert(isOpened is bool);
-    return isOpened as bool;
+    if (Platform.isAndroid) {
+      final isOpened = await _channel.invokeMethod('openNFCSettings');
+      assert(isOpened is bool);
+      return isOpened as bool;
+    } else {
+      return false;
+    }
   }
 
   /// Example mrz:
@@ -81,7 +87,7 @@ class PassportDecoder {
     try {
       _channel.invokeMethod('getPassportData', mrz);
     } catch (e) {
-      throw e;
+      controller.addError(e);
     }
 
     return controller.stream;
