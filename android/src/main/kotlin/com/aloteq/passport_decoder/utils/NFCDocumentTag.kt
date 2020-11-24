@@ -1,6 +1,5 @@
 package com.aloteq.passport_decoder.utils
 
-import android.R.attr.bitmap
 import android.graphics.Bitmap
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
@@ -17,7 +16,6 @@ import net.sf.scuba.smartcards.CardServiceException
 import org.jmrtd.*
 import org.jmrtd.lds.icao.DG1File
 import java.io.ByteArrayOutputStream
-import java.nio.ByteBuffer
 import java.security.Security
 
 
@@ -69,6 +67,7 @@ class NFCDocumentTag {
                     personDetails.secondaryIdentifier = mrzInfo.secondaryIdentifier
                     personDetails.nationality = mrzInfo.nationality
                     personDetails.gender = mrzInfo.gender
+                    personDetails.personalNumber = mrzInfo.personalNumber
                     passport.personDetails = personDetails
                 }
 

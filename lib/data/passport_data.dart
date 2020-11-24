@@ -193,6 +193,7 @@ class PersonDetails {
   String dateOfExpiry;
   String documentCode;
   String documentNumber;
+  String personalNumber;
   String gender;
   String issuingState;
   String nationality;
@@ -205,6 +206,7 @@ class PersonDetails {
       this.dateOfExpiry,
       this.documentCode,
       this.documentNumber,
+      this.personalNumber,
       this.gender,
       this.issuingState,
       this.nationality,
@@ -217,6 +219,7 @@ class PersonDetails {
     dateOfExpiry = json['dateOfExpiry'];
     documentCode = json['documentCode'];
     documentNumber = json['documentNumber'];
+    personalNumber = json['personalNumber'];
     gender = json['gender'];
     issuingState = json['issuingState'];
     nationality = json['nationality'];
@@ -231,6 +234,7 @@ class PersonDetails {
     data['dateOfExpiry'] = this.dateOfExpiry;
     data['documentCode'] = this.documentCode;
     data['documentNumber'] = this.documentNumber;
+    data['personalNumber'] = this.personalNumber;
     data['gender'] = this.gender;
     data['issuingState'] = this.issuingState;
     data['nationality'] = this.nationality;
@@ -247,6 +251,7 @@ class PersonDetails {
         'dateOfExpiry: $dateOfExpiry \n'
         'documentCode: $documentCode \n'
         'documentNumber: $documentNumber \n'
+        'personalNumber: $personalNumber \n'
         'gender: $gender \n'
         'issuingState: $issuingState \n'
         'nationality: $nationality \n'

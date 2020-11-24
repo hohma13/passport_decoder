@@ -19,6 +19,7 @@ class PersonDetails : Parcelable {
     var secondaryIdentifier: String? = null
     var nationality: String? = null
     var documentNumber: String? = null
+    var personalNumber: String? = null
     var dateOfBirth: String? = null
     var dateOfExpiry: String? = null
     var optionalData1: String? = null /* NOTE: holds personal number for some issuing states (e.g. NL), but is used to hold (part of) document number for others. */
@@ -36,6 +37,7 @@ class PersonDetails : Parcelable {
         this.secondaryIdentifier = if (`in`.readInt() == 1) `in`.readString() else null
         this.nationality = if (`in`.readInt() == 1) `in`.readString() else null
         this.documentNumber = if (`in`.readInt() == 1) `in`.readString() else null
+        this.personalNumber = if (`in`.readInt() == 1) `in`.readString() else null
         this.dateOfBirth = if (`in`.readInt() == 1) `in`.readString() else null
         this.dateOfExpiry = if (`in`.readInt() == 1) `in`.readString() else null
         this.optionalData1 = if (`in`.readInt() == 1) `in`.readString() else null
@@ -76,6 +78,11 @@ class PersonDetails : Parcelable {
         dest.writeInt(if (documentNumber != null) 1 else 0)
         if (documentNumber != null) {
             dest.writeString(documentNumber)
+        }
+
+        dest.writeInt(if (personalNumber != null) 1 else 0)
+        if (personalNumber != null) {
+            dest.writeString(personalNumber)
         }
 
         dest.writeInt(if (dateOfBirth != null) 1 else 0)
